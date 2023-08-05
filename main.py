@@ -67,6 +67,7 @@ def get_weather(region):
     #大气压强，默认单位：百帕
     pressure = response["now"]["pressure"] + "百帕"
     return weather, temp, feelsLike, vis, precip, wind_dir, pressure
+
  
  
 def get_birthday(birthday, year, today):
@@ -122,8 +123,8 @@ def get_ciba():
     note_ch = r.json()["note"]
     return note_ch, note_en
  
- 
-def send_message(to_user, access_token, region_name, weather, temp, wind_dir, note_ch, note_en):
+                # note_ch, note_en
+def send_message(to_user, access_token, region_name, weather, temp, feelsLike, vis, precip, wind_dir, pressure,):
     url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}".format(access_token)
     week_list = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
     year = localtime().tm_year
@@ -164,7 +165,7 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
             "temp": {
                 "value": temp,
                 "color": get_color()
-            },      
+            },
             "feelsLike": {
                 "value": feelsLike,
                 "color": get_color()
@@ -180,6 +181,7 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
             "wind_dir": {
                 "value": wind_dir,
                 "color": get_color()
+
             },
             "pressure": {
                 "value": pressure,
@@ -192,10 +194,12 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
             "note_en": {
                 "value": note_en,
                 "color": get_color()
+
             },
             "note_ch": {
                 "value": note_ch,
                 "color": get_color()
+
             }
         }
     }
@@ -224,7 +228,7 @@ def send_message(to_user, access_token, region_name, weather, temp, wind_dir, no
         print("推送消息成功")
     else:
         print(response)
- 
+
  
 if __name__ == "__main__":
     try:
@@ -245,12 +249,13 @@ if __name__ == "__main__":
     users = config["user"]
     # 传入地区获取天气信息
     region = config["region"]
-    weather, temp , feelsLike, vis, precip , wind_dir, pressure = get_weather(region)
+    weather, temp, feelsLike, vis, precip, wind_dir, pressure = get_weather(region)
     note_ch = config["note_ch"]
     note_en = config["note_en"]
     if note_ch == "" and note_en == "":
         # 获取词霸每日金句
         note_ch, note_en = get_ciba()
+
     # 公众号推送消息
     for user in users:
         send_message(user, accessToken, region, weather, temp, feelsLike, vis, precip, wind_dir, pressure,) #note_ch, note_en
